@@ -1,0 +1,4 @@
+# PocketPick
+
+requires 'Python 2.7, PyQt4'
+run 'python main.py'
