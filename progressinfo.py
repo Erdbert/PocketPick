@@ -54,5 +54,7 @@ class ProgressInfo(QtGui.QWidget):
 		self.pbar.setValue(self.pbar.maximum())
 		self.log.setText(self.log.text() + '\nCompleted!')
 
+		self.parentWidget().frame.selections.switch_button.setEnabled(True)
+
 		self.ok_button.setEnabled(True)
 		self.ok_button.clicked.connect(self.parentWidget().switch_to_hero_view)

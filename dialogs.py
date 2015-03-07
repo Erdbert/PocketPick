@@ -8,8 +8,8 @@ class SliderDialog(QtGui.QDialog):
 
 		default_value = 2
 
-		self.info = QtGui.QLabel('Select the off-time in seconds between queries to the website\nin order to prevent an ip-blocking due to high request frequencies.\nRecommended value: {0}'.format(default_value))
-		self.text = QtGui.QLabel('selected value: ', self)
+		self.info = QtGui.QLabel('Select the off-time in seconds between queries to the website\nin order to prevent ip-blocking due to high request frequencies.\nRecommended value: {0}'.format(default_value))
+		self.text = QtGui.QLabel('Selected value: ', self)
 		self.value = QtGui.QLabel(str(default_value), self)
 		self.slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
 		self.slider.setRange(0, 3)

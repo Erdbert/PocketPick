@@ -1,11 +1,6 @@
-from webcontent import WebContent
 from filemanager import FileManager
 from PyQt4 import QtGui, QtCore
-import urllib
-import httplib
-import re
 import json
-import time
 
 class Hero(QtGui.QPushButton):
 	"""

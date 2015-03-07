@@ -124,14 +124,14 @@ class MainWindow(QtGui.QMainWindow):
 
 	def howto(self):
 		self.popup = QtGui.QLabel()
-		self.popup.setText('How to use this program:\nThis program simulates the pick/ban phase of the Dota 2 Captains Mode.\nEach turn all remaining heroes are sorted by the quality of picking/banning them and displayed on the left side.\n This quality is based on the performance of the hero against other heroes as given on the website www.dotabuff.com (advantage).\nA left click on a hero selects it for the required action.\nA right click on a hero shows information about that hero on the bottom of the main window.\nHeroes can be sent back to the pool by left clicking their icon in the selection view.\nThis can only be done in reversed order to that they were selected.\nThe double arrow button between the teams selections switches the beginning team. This button is only active if no hero has been picked.\nHero images and more important their statistics can be updated from the web. The source of information is www.dotabuff.com.\nIn case of an updated of the versus data the programm will parse the dotabuff website in order to extract the advantages/disadvantages for every hero.\nThis data will be saved to a file and on the next start loaded from that file.')
+		self.popup.setText('How to use this program:\nThis program simulates the pick/ban phase of the Dota 2 Captains Mode.\nEach turn all remaining heroes are sorted by the quality of picking/banning them and displayed on the left side.\nThis quality is based on the performance of the hero against other heroes as given on the website www.dotabuff.com (advantage).\nA left click on a hero selects it for the required action.\nA right click on a hero shows information about that hero on the bottom of the main window.\nHeroes can be sent back to the pool by left clicking their icon in the selection view. This can only be done in reversed order to that they were selected.\nThe double arrow button between the teams selections switches the beginning team. This button is only active if no hero has been picked.\nHero images and more important their statistics can be updated from the web. The source of information is www.dotabuff.com.\nIn case of an updated of the versus data the programm will parse the dotabuff website in order to extract the advantages/disadvantages for every hero.\nThis data will be saved to a file and on the next start loaded from that file.')
 		self.popup.setWindowTitle('HowTo')
 		self.popup.setGeometry(600, 300, 1000, 300)
 		self.popup.show()
 
 	def about(self):
 		self.popup = QtGui.QLabel()
-		self.popup.setText('PocketPick v0.1\n02/28/2015\n(c) None')
+		self.popup.setText('PocketPick v0.1\n03/07/2015\n(c) None')
 		self.popup.setWindowTitle('About')
 		self.popup.setGeometry(600, 300, 250, 150)
 		self.popup.show()

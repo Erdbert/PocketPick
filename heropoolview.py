@@ -55,6 +55,8 @@ class HeroPoolView(QtGui.QWidget):
 		else:
 			return
 
+		self.frame.selections.switch_button.setEnabled(False)
+
 		self.frame.messages.setText('Updating hero data ...')
 
 		self.progress = ProgressInfo(self)

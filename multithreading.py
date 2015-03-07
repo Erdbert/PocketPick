@@ -17,6 +17,7 @@ class HeroLoader(WebContent, QObject):
 		self.view = view
 		self.pool = pool
 		self.interval = interval
+		self.what = what
 
 		self.fetch_what = {'images' : self.fetch_image, 'related_to' : self.fetch_related_to}[what]
 
