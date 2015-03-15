@@ -37,12 +37,10 @@ class ProgressInfo(QtGui.QWidget):
 		self.pbar.setMinimum(vmin)
 		self.pbar.setMaximum(vmax)
 
-	def update(self, name, slot):
+	def update(self, name):
 		name = str(name)
-		slot = str(slot)
 		
-		msg = {'catch_image' : 'image', 'catch_related_to' : 'versus data'}[slot]
-		msg = '{0}: {1} loaded.'.format(name, msg)
+		msg = '{0}: updated.'.format(name)
 
 		self.pbar.setValue(self.pbar.value() + 1)
 		self.log.setText(self.log.text() + '\n' + msg)

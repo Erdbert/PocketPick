@@ -1,7 +1,7 @@
 from hero import Hero
 from webinterface import WebInterface
 from filemanager import FileManager
-from custom_exceptions import DataFileError
+from custom_exceptions import DataFileError, MissingAttributesError
 from PyQt4 import QtGui
 import info
 
@@ -37,6 +37,22 @@ class HeroPool(WebInterface):
 				heroes[hero_name] = Hero(hero_name, data['img_name'], data['related_to'])
 
 			self.heroes = heroes
+
+	def check_heroes(self):
+		missing_attributes = {}
+		for hero in self.heroes.values():
+			missing = []
+			if hero.img_name == 'images/nopic.png':
+				missing.append('img_name')
+			if not hero.related_to:
+				missing.append('related_to')
+			missing_attributes[hero.name] = missing
+
+		return missing_attributes
+
+	def add_heroes(self, heroes):
+		for hero_name in heroes:
+			self.heroes[hero_name] = Hero(hero_name, None, None)
 
 	def save_heroes(self):
 		heroes = {}

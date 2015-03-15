@@ -10,25 +10,22 @@ class HeroLoader(WebContent, QObject):
 	data_loaded = pyqtSignal('QString', 'QString', 'QString')
 	job_done = pyqtSignal()
 
-	def __init__(self, view, pool, conn, what, interval=3, parent=None):
+	def __init__(self, view, pool, conn, interval=3, parent=None):
 		WebContent.__init__(self, conn)
 		QObject.__init__(self, parent)
 
 		self.view = view
 		self.pool = pool
 		self.interval = interval
-		self.what = what
-
-		self.fetch_what = {'images' : self.fetch_image, 'related_to' : self.fetch_related_to}[what]
 
 	def load_hero_data(self):
 		self.view.updated.connect(self.disconnect_view_from_hero)
 		for hero in sorted(self.pool.heroes.values(), key=lambda x: x.name):
-			self.data_loaded.connect({'images' : hero.catch_image, 'related_to' : hero.catch_related_to}[self.what])
+			self.data_loaded.connect(hero.catch_data)
 			hero.data_received.connect(self.disconnect_hero)
 			hero.data_received.connect(self.view.update)
 
-			self.fetch_what(hero.name)
+			self.fetch_hero_data(hero.name)
 
 			sleep(self.interval)
 
@@ -36,11 +33,10 @@ class HeroLoader(WebContent, QObject):
 
 		self.job_done.emit()
 
-	def disconnect_hero(self, name, slot):
+	def disconnect_hero(self, name):
 		name = str(name)
-		slot = str(slot)
 
-		self.data_loaded.disconnect(self.pool.heroes[name].__getattribute__(slot))
+		self.data_loaded.disconnect(self.pool.heroes[name].catch_data)
 		self.pool.heroes[name].data_received.disconnect(self.disconnect_hero)
 
 	def disconnect_view_from_hero(self, name):
@@ -48,49 +44,55 @@ class HeroLoader(WebContent, QObject):
 		
 		self.pool.heroes[name].data_received.disconnect(self.view.update)
 
-	def fetch_related_to(self, name):
-		# print "Fetching versus data for {0} ...".format(name)
-
-		hero_name = name
-
-		name = HeroLoader.prepare_name_for_url(name)
-		url = '/heroes/' + name + '/_versus'
-
-		related_to = {}
-
-		html = self.__get_html__(url)
-
-		rows = html.replace('</tr>', '<tr>').split('<tr>')
-		rows = [row for row in rows if '<img' in row]
-
-		for row in rows:
-			name_index = row.index('title=')
-			name = row[name_index+7 : len(row)].split('"')[0]
-			name = HeroLoader.prepare_name_from_html(name)
-
-			cols = row.replace('</td>', '<td>').split('<td>')
-
-			advantage = float(cols[4].split('%')[0])
-
-			related_to[name] = advantage
-
-		# print "Loaded related_to for {0}. Sleeping for 3 seconds now.".format(hero_name)
-
-		self.data_loaded.emit('related_to', hero_name, json.dumps(related_to))
-
-	def fetch_image(self, name):
-		"""
-		Fetches the image for the hero from the website.
-		"""
-
-		# print "Fetching image for {0} ...".format(name)
-
+	def fetch_hero_data(self, name):
 		hero_name = name
 
 		name = HeroLoader.prepare_name_for_url(name)
 		url = '/heroes/' + name
 
 		html = self.__get_html__(url)
+
+		related_to = self.fetch_related_to(html)
+		img_name = self.fetch_image(hero_name, html)
+
+		self.data_loaded.emit(hero_name, img_name, json.dumps(related_to))
+
+	def fetch_related_to(self, html):
+		related_to = {}
+
+		tables = html.replace('</table>', '<table').split('<table')
+		for ii in range(len(tables)):
+			if 'best versus' in tables[ii].lower():
+				best_versus = tables[ii+1]
+			if 'worst versus' in tables[ii].lower():
+				worst_versus = tables[ii+1]
+
+		related_to.update(self.parse_versus(best_versus))
+		related_to.update(self.parse_versus(worst_versus))
+
+		return related_to
+
+	def parse_versus(self, html):
+		related_to = {}
+		rows = [p for p in html.replace('</tr>', '<tr').split('<tr') if 'image-container-hero' in p]
+		for row in rows:
+			cols = [p for p in row.replace('</td>', '<td').split('<td') if len(p) > 1]
+
+			name = cols[1][2:]
+			name = name[name.index('>')+1:name.index('<')]
+
+			advantage = cols[2][1:]
+			advantage = float(advantage[:advantage.index('%')])
+
+			related_to[name] = advantage
+
+		return related_to
+
+
+	def fetch_image(self, hero_name, html):
+		"""
+		Fetches the image for the hero from the website.
+		"""
 
 		html_name = HeroLoader.prepare_name_for_html(hero_name)
 
@@ -103,9 +105,7 @@ class HeroLoader(WebContent, QObject):
 		new_img_name = 'images/' + FileManager.prepare_name(hero_name) + '.' + img_url.split('.')[-1]
 		urllib.urlretrieve(img_url, new_img_name)
 
-		# print "Saved image as {0}. Sleeping for 3 seconds now.".format(new_img_name)
-
-		self.data_loaded.emit('image', hero_name, new_img_name)
+		return new_img_name
 
 	@staticmethod
 	def prepare_name_for_url(name):

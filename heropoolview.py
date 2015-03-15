@@ -1,6 +1,6 @@
 from heropool import HeroPool
 from progressinfo import ProgressInfo
-from custom_exceptions import DataFileError, HTMLParsingError
+from custom_exceptions import DataFileError, HTMLParsingError, MissingAttributesError
 from dialogs import SliderDialog
 from PyQt4 import QtGui, QtCore
 from multithreading import HeroLoader
@@ -26,7 +26,7 @@ class HeroPoolView(QtGui.QWidget):
 		except DataFileError as exc:
 			choice = QtGui.QMessageBox.question(self, 'No Data File', exc.message + '\nDo you want to load the data from the web?', 'ok', 'cancel', defaultButtonNumber=0)
 			if choice == 0:
-				self.update_related_to()
+				self.update_heroes()
 
 		grid = QtGui.QGridLayout()
 
@@ -42,13 +42,7 @@ class HeroPoolView(QtGui.QWidget):
 
 		self.__connect_heroes__()
 
-	def update_related_to(self):
-		self.update_heroes('related_to')
-
-	def update_images(self):
-		self.update_heroes('images')
-
-	def update_heroes(self, what):
+	def update_heroes(self):
 		dialog = SliderDialog()
 		if dialog.exec_():
 			off_time = dialog.get_value()
@@ -65,7 +59,7 @@ class HeroPoolView(QtGui.QWidget):
 		self.stacked_layout.addWidget(self.progress)
 		self.stacked_layout.setCurrentWidget(self.progress)
 
-		self.worker = HeroLoader(self.progress, self.pool, self.pool.conn, what, off_time)
+		self.worker = HeroLoader(self.progress, self.pool, self.pool.conn, off_time)
 
 		self.thread = QtCore.QThread()
 		self.worker.moveToThread(self.thread)

@@ -18,20 +18,17 @@ class MainWindow(QtGui.QMainWindow):
 		self.setCentralWidget(self.view)
 
 		self.messages = QtGui.QLabel('', self.view)
-		self.pool = HeroPoolView(self, self.view)
 		self.selections = SelectionsView(self, self.view)
+		self.pool = HeroPoolView(self, self.view)
 		self.picklist = PickListView(self, self.view)
 		self.heroinfo = HeroInfoView(self, self.view)
 
 		menubar = self.menuBar()
 
 		menu = menubar.addMenu('Update')
-		menu_update_images = QtGui.QAction('Update images', self)
-		menu_update_images.triggered.connect(self.pool.update_images)
-		menu.addAction(menu_update_images)
-		menu_update_vs = QtGui.QAction('Update versus data', self)
-		menu_update_vs.triggered.connect(self.pool.update_related_to)
-		menu.addAction(menu_update_vs)
+		menu_update_heroes = QtGui.QAction('Update heroes', self)
+		menu_update_heroes.triggered.connect(self.pool.update_heroes)
+		menu.addAction(menu_update_heroes)
 
 		menu = menubar.addMenu('Help')
 		menu_howto = QtGui.QAction('HowTo', self)
