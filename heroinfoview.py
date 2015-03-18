@@ -1,4 +1,4 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 class HeroInfoView(QtGui.QWidget):
 	def __init__(self, frame, parent):
@@ -18,22 +18,27 @@ class HeroInfoView(QtGui.QWidget):
 		layout = self.layout()
 
 		layout.itemAt(1).itemAt(1).widget().setText(hero.name)
-		layout.itemAt(1).itemAt(0).widget().setPixmap(QtGui.QPixmap(hero.img_name))
+		layout.itemAt(1).itemAt(0).widget().setIcon(QtGui.QIcon(hero.img_name))
 
 		count=0
 		for vshero, adv in sorted([(k,hero.related_to[k]) for k in hero.related_to.keys()], key=lambda x: x[1], reverse=True):
-			layout.itemAt(2).itemAt(count).widget().setPixmap(QtGui.QPixmap(self.pool.heroes[vshero].img_name))
+			layout.itemAt(2).itemAt(count).widget().setIcon(QtGui.QIcon(self.pool.heroes[vshero].img_name))
 			layout.itemAt(3).itemAt(count).widget().setText(str(adv))
 			count += 1
 
 	def __set_default_layout__(self):
 		name = QtGui.QLabel()
-		image = QtGui.QLabel()
+		image = QtGui.QPushButton()
+		image.setFixedSize(64, 36)
+		image.setIconSize(QtCore.QSize(64, 36))
 
 		hbox_im = QtGui.QHBoxLayout()
 		hbox_adv = QtGui.QHBoxLayout()
 		for ii in range(16):
-			hbox_im.addWidget(QtGui.QLabel())
+			im = QtGui.QPushButton()
+			im.setFixedSize(64, 36)
+			im.setIconSize(QtCore.QSize(64, 36))
+			hbox_im.addWidget(im)
 			hbox_adv.addWidget(QtGui.QLabel())
 
 		hbox_hero = QtGui.QHBoxLayout()

@@ -79,7 +79,7 @@ class HeroLoader(WebContent, QObject):
 			cols = [p for p in row.replace('</td>', '<td').split('<td') if len(p) > 1]
 
 			name = cols[1][2:]
-			name = name[name.index('>')+1:name.index('<')]
+			name = HeroLoader.prepare_name_from_html(name[name.index('>')+1:name.index('<')])
 
 			advantage = cols[2][1:]
 			advantage = float(advantage[:advantage.index('%')])
