@@ -2,7 +2,7 @@ from heropoolview import HeroPoolView
 from selectionsview import SelectionsView
 from picklistview import PickListView
 from heroinfoview import HeroInfoView
-from procedure import Procedure
+from procedure import AllPickProcedure, CaptainsModeProcedure
 from estimator import Estimator
 
 from PyQt4 import QtGui, QtCore
@@ -11,7 +11,7 @@ class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
 		QtGui.QMainWindow.__init__(self)
 
-		self.setWindowTitle('PocketPick')
+		self.setWindowTitle('PocketPick - Captains Mode')
 
 		self.view = QtGui.QWidget(self)
 
@@ -24,6 +24,14 @@ class MainWindow(QtGui.QMainWindow):
 		self.heroinfo = HeroInfoView(self, self.view)
 
 		menubar = self.menuBar()
+
+		menu = menubar.addMenu('Modes')
+		menu_all_pick = QtGui.QAction('All Pick', self)
+		menu_all_pick.triggered.connect(self.switch_to_mode_all_pick)
+		menu.addAction(menu_all_pick)
+		menu_captains_mode = QtGui.QAction('Captains Mode', self)
+		menu_captains_mode.triggered.connect(self.switch_to_mode_captains_mode)
+		menu.addAction(menu_captains_mode)
 
 		menu = menubar.addMenu('Update')
 		menu_update_heroes = QtGui.QAction('Update heroes', self)
@@ -51,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
 		grid_layout.addWidget(self.heroinfo, 3, 1)
 		self.view.setLayout(grid_layout)
 
-		self.procedure = Procedure('R')
+		self.procedure = CaptainsModeProcedure('R')
 		step = self.procedure.next()
 		self.step = step[0]
 		if not self.messages.text():
@@ -74,8 +82,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.heroinfo.display_hero(self.sender())
 
 	def switch_start(self):
-		mapping = {'D' : 'R', 'R' : 'D'}
-		self.procedure = Procedure(mapping[self.step[0]])
+		self.procedure = self.procedure.switch_order()
 		step = self.procedure.next()
 		self.step = step[0]
 		self.messages.setText(step[1])
@@ -99,7 +106,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.step = step[0]
 			self.messages.setText(step[1])
 
-			self.picklist.add_heroes(self.estimator.estimate(self.selections.expose_selected_heroes(self.step)))
+			self.picklist.add_heroes(self.estimator.estimate(self.selections.expose_selected_heroes(self.procedure.expose_step())))
 
 		if self.selections.switch_button.isEnabled():
 			self.selections.switch_button.setEnabled(False)
@@ -114,10 +121,24 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.selections.hero_back_to_pool(self)
 
-		self.picklist.add_heroes(self.estimator.estimate(self.selections.expose_selected_heroes(self.step)))
+		self.picklist.add_heroes(self.estimator.estimate(self.selections.expose_selected_heroes(self.procedure.expose_step())))
 
 		if len(self.selections.selection_order) == 0:
 			self.selections.switch_button.setEnabled(True)
+
+	def switch_to_mode_all_pick(self):
+		self.procedure = AllPickProcedure('R')
+		step = self.procedure.next()
+		self.step = step[0]
+		self.messages.setText(step[1])
+		self.setWindowTitle('PocketPick - All Pick')
+
+	def switch_to_mode_captains_mode(self):
+		self.procedure = CaptainsModeProcedure('R')
+		step = self.procedure.next()
+		self.step = step[0]
+		self.messages.setText(step[1])
+		self.setWindowTitle('PocketPick - Captains Mode')
 
 	def howto(self):
 		self.popup = QtGui.QLabel()

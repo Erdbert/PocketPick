@@ -20,7 +20,7 @@ class HeroPoolView(QtGui.QWidget):
 		main_layout.addLayout(self.stacked_layout)
 		self.setLayout(main_layout)
 
-		self.pool = HeroPool('hdata.json', 'www.dotabuff.com')
+		self.pool = HeroPool('hdata.json', 'en.dotabuff.com')
 		try:
 			self.pool.load_heroes()
 		except DataFileError as exc:
